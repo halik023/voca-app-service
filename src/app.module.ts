@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { buildDataSourceOptions } from './database/datasource';
 import { GlobalJwtModule } from './common/globalJwt.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CourseModule } from './modules/course/user.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { GlobalJwtModule } from './common/globalJwt.module';
       inject: [ConfigService],
       useFactory: buildDataSourceOptions,
     }),
+    AuthModule,
+    CourseModule,
   ],
 })
 export class AppModule {}

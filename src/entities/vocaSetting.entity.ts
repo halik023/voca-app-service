@@ -16,7 +16,7 @@ export class VocaSetting extends BaseEntity {
   @Column({ default: true })
   is_audio_quiz: boolean;
 
-  @OneToOne(() => User, (user) => user.voca_settings)
+  @OneToOne(() => User, (user) => user.voca_setting)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

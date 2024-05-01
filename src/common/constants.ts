@@ -1,0 +1,12 @@
+export enum ACCOUNT_TYPES {
+  NORMAL = 'NORMAL',
+  FACEBOOK = 'FACEBOOK',
+  GOOGLE = 'GOOGLE',
+  GITHUB = 'GITHUB',
+}
+
+export enum GENDERS {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+}
