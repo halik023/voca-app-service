@@ -13,7 +13,7 @@ import { Course } from './course.entity';
 import { Follower } from './follower.entity';
 import { RegisteredCourse } from './registeredCourse.entity';
 import { VocaSetting } from './vocaSetting.entity';
-import { ACCOUNT_TYPES, GENDERS } from 'src/common/constants';
+import { AccountType, Gender } from 'src/common/enum';
 import { generateUsername } from 'unique-username-generator';
 
 @Entity('users')
@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   password: string;
 
   @Column()
-  type: ACCOUNT_TYPES;
+  type: AccountType;
 
   @Column({ unique: true })
   username: string;
@@ -37,7 +37,7 @@ export class User extends BaseEntity {
   last_name: string;
 
   @Column({ nullable: true })
-  gender: GENDERS;
+  gender: Gender;
 
   @Column({ nullable: true })
   date_of_birth: Date;

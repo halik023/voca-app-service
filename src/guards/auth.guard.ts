@@ -8,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { HttpMessage, HttpStatusCode } from 'src/common/enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -20,7 +21,13 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new HttpException(
+        {
+          status: HttpStatusCode.UNAUTHORIZED,
+          message: HttpMessage.UNAUTHORIZED,
+        },
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
 
     try {
@@ -31,10 +38,10 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new HttpException(
         {
-          status: 419,
-          message: 'Token expired',
+          status: HttpStatusCode.INVALID_TOKEN,
+          message: HttpMessage.INVALID_ACCESS_TOKEN,
         },
-        419,
+        HttpStatusCode.INVALID_TOKEN,
       );
     }
 

@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
-import { GENDERS } from 'src/common/constants';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsEnum, IsNotEmpty, Length, Matches } from 'class-validator';
+import { Gender } from 'src/common/enum';
 
 export class RegisterBodyDto {
   @IsNotEmpty()
@@ -17,7 +18,9 @@ export class RegisterBodyDto {
   last_name: string;
 
   @IsNotEmpty()
-  gender: GENDERS;
+  @Transform(({ value }) => ('' + value).toLowerCase())
+  @IsEnum(Gender)
+  gender: Gender;
 
   @IsNotEmpty()
   date_of_birth: Date;

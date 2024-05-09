@@ -1,13 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import { ConfigService } from '@nestjs/config';
-import { LoginDto, RefreshTokenDto, RegisterBodyDto } from './auth.dto';
-import { ITokenRes } from './auth.interface';
 import { User } from 'src/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
-import { ACCOUNT_TYPES } from 'src/common/constants';
+import { Repository } from 'typeorm';
+import { AccountType, HttpMessage, HttpStatusCode } from 'src/common/enum';
+import { LoginDto, RefreshTokenDto, RegisterBodyDto } from 'src/dtos/auth.dto';
+import { ITokenRes } from 'src/interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,9 +18,25 @@ export class AuthService {
   ) {}
 
   async register(params: RegisterBodyDto): Promise<User> {
+    const userExisted = await this.userRepository.count({
+      where: {
+        email: params.email,
+      },
+    });
+
+    if (userExisted) {
+      throw new HttpException(
+        {
+          status: HttpStatusCode.BAD_REQUEST,
+          message: 'Email is existed',
+        },
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
     const user = this.userRepository.create({
       ...params,
-      type: ACCOUNT_TYPES.NORMAL,
+      type: AccountType.NORMAL,
     });
 
     await this.userRepository.save(user);
@@ -42,8 +58,11 @@ export class AuthService {
 
     if (!(user && isCorrectPass)) {
       throw new HttpException(
-        'Email or password is incorrect',
-        HttpStatus.UNAUTHORIZED,
+        {
+          status: HttpStatusCode.BAD_REQUEST,
+          message: HttpMessage.LOGIN_ERROR,
+        },
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
@@ -69,8 +88,11 @@ export class AuthService {
 
       if (!user) {
         throw new HttpException(
-          'Refresh token is not valid',
-          HttpStatus.BAD_REQUEST,
+          {
+            status: HttpStatusCode.INVALID_TOKEN,
+            message: HttpMessage.INVALID_ACCESS_TOKEN,
+          },
+          HttpStatusCode.INVALID_TOKEN,
         );
       }
 
@@ -82,8 +104,11 @@ export class AuthService {
       return tokens;
     } catch (error) {
       throw new HttpException(
-        'Refresh token is not valid',
-        HttpStatus.BAD_REQUEST,
+        {
+          status: HttpStatusCode.INVALID_TOKEN,
+          message: HttpMessage.INVALID_ACCESS_TOKEN,
+        },
+        HttpStatusCode.INVALID_TOKEN,
       );
     }
   }
